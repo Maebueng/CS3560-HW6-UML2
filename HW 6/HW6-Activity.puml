@@ -3,61 +3,57 @@ title School Facility Rental - Activity
 
 |Renter|
 start
-:Choose facility, date, time, and event type;
 
-|Website|
-:Check availability;
-if (available?) then (yes)
-    |Renter|
-    :Enter contact info and submit request;
+repeat
+    :Choose facility, date, time, and event type;
 
-    |School Staff|
-    :Check request;
+    |Website|
+    :Check availability;
+    
+    if (available?) then (yes)
+        |Renter|
+        :Enter contact info and submit request;
 
-    if (approved?) then (yes)
-        |Payment Service|
-        :Charge renter;
+        |School Staff|
+        :Check request;
 
-        if(payment successful?) then (yes)
+        if (approved?) then (yes)
+            |Payment Service|
+            :Charge renter;
+
+            if(payment successful?) then (yes)
+                |Website|
+                :Save booking;
+
+                |Email Service|
+                :Send confirmation email;
+                stop
+            else(payment fails)
+                |Website|
+                :Record payment failure;
+
+                |Email Service|
+                :Send payment failure email;
+                stop
+            endif
+        else(rejected)
             |Website|
-            :Save booking;
+            :Record rejection;
 
             |Email Service|
-            :Send confirmation email;
-
-            |Renter|
-            stop
-        else(payment fails)
-            |Website|
-            :Record payment failure;
-
-            |Email Service|
-            :Send payment failure email;
-
-            |Renter|
+            :Send rejection email;
             stop
         endif
-    
-    else(rejected)
+    else(no)
         |Website|
-        :Record rejection;
-
-        |Email Service|
-        :Send rejection email;
+        :Show not available;
 
         |Renter|
-        stop
     endif
-else(no)
-    |Website|
-    :Show not available;
+repeat while (choose another date?) is (yes)
+->no;
 
-    |Renter|
-    if (choose a different date?) then (yes)
-        goto start_over
-    else(no)
-        stop
-    endif
-endif
+|Renter|
+stop
 
 @enduml

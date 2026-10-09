@@ -12,8 +12,30 @@ Website -> Staff: send request for review
 
 alt approved
     Staff --> Website: approved
-    ' add payment and confirmation here '
+    
+    Website -> Pay: process payment
+    alt payment sucessful
+        Pay --> Website: payment success
+        
+        Website -> Website: save booking
+        Website -> Email: request confirmation email
+        
+        Email --> Renter: send confirmation email
+    else payment denied
+        Pay --> Website: payment failed
+        
+        Website -> Website: record payment failure
+        Website -> Email: request payment failure email
+        
+        Email --> Renter: send payment failure email
+    end
+
 else rejected
     Staff --> Website: rejected
+    
+    Website -> Website: record rejection
+    Website -> Email: request rejection email
+
+    Email -> Renter: send rejection email
 end
 @enduml
